@@ -114,5 +114,32 @@ func (server *ServerService) Stop(regionCode, serverInstanceNo, url string) erro
 }
 
 func (server *ServerService) Update(url string) error {
+	// url += fmt.Sprintf("?regionCode=%s&serverInstanceNo=%s&serverProductCode=%s", updateParams.regionCode, updateParams.serverInstanceNo, updateParams.serverProductCode)
+	url += "temp"
+
+	// Create an HTTP request
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return err
+	}
+
+	// Set common headers
+	GetCommonHeader(req)
+
+	// Set authorization token
+	SetAuthToken(req, server.token)
+
+	// Make the HTTP request
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Check the response status
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected response status: %s", resp.Status)
+	}
+
 	return nil
 }
